@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<string name="app_name">ICastLoop</string>
+<string name="action_settings">Settings</string>
+<string name="hello_world">Hello world!</string>
+
+<string-array name="radar_locations_array">
+    <item>Denver, CO</item>
+    <item>National</item>
+    <item>Binghamton, NY</item>
+    <item>Staunton, VA</item>
+</string-array>
+
+<string-array name="radar_urls_array">
+    <item>http://images.intellicast.com/WxImages/RadarLoop/den_None_anim.gif</item>
+    <item>http://images.intellicast.com/WxImages/RadarLoop/usa_None_anim.gif</item>
+    <item>http://images.intellicast.com/WxImages/RadarLoop/bgm_None_anim.gif</item>
+    <item>http://images.intellicast.com/WxImages/RadarLoop/shd_None_anim.gif</item>
+</string-array>
+
+
+</resources>
