@@ -51,9 +51,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         spinner.setOnItemSelectedListener(this);
         spinner.setAdapter(adapter);
 
-
         this.updateImages();
-
 
         // Setup Our WebView Control
         webView = (WebView) findViewById(R.id.radarWebView);

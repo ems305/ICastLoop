@@ -3,7 +3,6 @@
 
 <string name="app_name">ICastLoop</string>
 <string name="action_settings">Settings</string>
-<string name="hello_world">Hello world!</string>
 
 <string-array name="radar_codes_array">
     <item>usa</item>
