@@ -16,7 +16,7 @@
             android:id="@+id/webView1"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="55dp"
+            android:layout_marginTop="75dp"
             android:background="@android:color/background_light"/>
 
     <Spinner
@@ -24,17 +24,40 @@
             android:layout_height="wrap_content"
             android:id="@+id/spinner"
             android:spinnerMode="dialog"
+            android:minWidth="175dp"
+            android:layout_alignTop="@+id/exitButton"
             android:layout_alignLeft="@+id/webView1"
-            android:layout_alignParentTop="true"
-            android:minWidth="175dp"/>
+            android:layout_toLeftOf="@+id/refreshButton"/>
 
     <Button
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Exit"
             android:id="@+id/exitButton"
-            android:layout_alignParentRight = "true"
-            android:singleLine="false"/>
+            android:singleLine="false"
+            android:background="@android:drawable/ic_menu_close_clear_cancel"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/webView1"
+            android:onClick="onBtnClicked"/>
+
+    <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/settingsButton"
+            android:background="@android:drawable/ic_menu_preferences"
+            android:layout_alignTop="@+id/refreshButton"
+            android:layout_toLeftOf="@+id/exitButton"
+            android:onClick="onBtnClicked"/>
+
+    <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/refreshButton"
+            android:background="@android:drawable/ic_menu_rotate"
+            android:layout_alignTop="@+id/spinner"
+            android:layout_toLeftOf="@+id/settingsButton"
+            android:onClick="onBtnClicked"/>
 
 </RelativeLayout>
