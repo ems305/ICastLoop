@@ -5,8 +5,7 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              tools:context=".SettingsActivity"
-              android:background="@android:color/background_light">
+              tools:context=".SettingsActivity">
 
     <Button
             style="?android:attr/buttonStyleSmall"
@@ -17,4 +16,13 @@
             android:layout_alignParentRight="true"
             android:background="@android:drawable/ic_menu_revert"
             android:onClick="onBtnClicked"/>
+
+    <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/optionListView"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/backButton"
+            android:choiceMode="singleChoice"/>
+
 </RelativeLayout>

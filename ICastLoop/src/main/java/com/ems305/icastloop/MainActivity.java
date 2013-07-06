@@ -2,23 +2,33 @@ package com.ems305.icastloop;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.Window;
 import android.view.KeyEvent;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+
+import java.io.InputStream;
 
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
+    private ImageView imageview;
     private WebView webView;
     private Spinner spinner;
     private ProgressDialog mProgressDialog;
@@ -29,34 +39,45 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        imageview = (ImageView) findViewById(R.id.radarImageView);
+        new DownloadImageTask(imageview).execute("http://images.intellicast.com/WxImages/RadarLoop/den_None_anim.gif");
+
         mProgressDialog = new ProgressDialog(this);
 
         // Update Spinner
         spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_locations_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_names_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setOnItemSelectedListener(this);
         spinner.setAdapter(adapter);
 
+
+        this.updateImages();
+
+
         // Setup Our WebView Control
-        webView = (WebView) findViewById(R.id.webView1);
+        webView = (WebView) findViewById(R.id.radarWebView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
+        webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
         webView.getSettings().setSupportZoom(true);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.setInitialScale(127); // So the Gif Fits The Container
-        webView.loadUrl("http://images.intellicast.com/WxImages/RadarLoop/den_None_anim.gif"); // Set Default To Denver
+
+        //webView.loadUrl("http://images.intellicast.com/WxImages/RadarLoop/den_None_anim.gif"); // Set Default To Denver
 
         webView.setWebViewClient(new ICastWebViewClient());
+
+
     }
 
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        this.updateImage();
+        this.updateImages();
     }
 
     @Override
@@ -74,30 +95,35 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         }
 
         if(v.getId() == R.id.settingsButton){
-            // TODO: Go to Settings Screen
+            // Go to Settings Screen
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
 
         if(v.getId() == R.id.refreshButton){
-            this.updateImage();
+            this.updateImages();
         }
     }
 
 
 
-    private void updateImage() {
+    private void updateImages() {
 
         spinner = (Spinner) findViewById(R.id.spinner);
         int pos = spinner.getSelectedItemPosition();
 
         // Get Corresponding Radar URL And Load That
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_urls_array, android.R.layout.simple_spinner_item);
-        CharSequence radarUrl = adapter.getItem(pos);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_codes_array, android.R.layout.simple_spinner_item);
+        CharSequence radarCode = adapter.getItem(pos);
 
-        webView = (WebView) findViewById(R.id.webView1);
-        webView.setVisibility(View.GONE);
-        webView.loadUrl(radarUrl.toString());
+        imageview = (ImageView) findViewById(R.id.radarImageView);
+        new DownloadImageTask(imageview).execute("http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + ".gif");
+
+
+        webView = (WebView) findViewById(R.id.radarWebView);
+        //webView.setVisibility(View.GONE);
+        webView.loadUrl("http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif");
+        webView.setBackgroundColor(Color.TRANSPARENT);
     }
 
 
@@ -137,7 +163,36 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         return super.onKeyDown(keyCode, event);
     }
 
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
+    }
+
+
+
 }
+
 
 
 /*

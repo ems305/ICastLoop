@@ -5,19 +5,87 @@
 <string name="action_settings">Settings</string>
 <string name="hello_world">Hello world!</string>
 
-<string-array name="radar_locations_array">
-    <item>Denver, CO</item>
-    <item>National</item>
-    <item>Binghamton, NY</item>
-    <item>Staunton, VA</item>
+<string-array name="radar_codes_array">
+    <item>usa</item>
+    <item>lit</item>
+    <item>prc</item>
+    <item>bfl</item>
+    <item>den</item>
+    <item>hfd</item>
+    <item>eyw</item>
+    <item>pie</item>
+    <item>csg</item>
+    <item>dsm</item>
+    <item>myl</item>
+    <item>spi</item>
+    <item>sln</item>
+    <item>bwg</item>
+    <item>msy</item>
+    <item>cad</item>
+    <item>stc</item>
+    <item>jef</item>
+    <item>tvr</item>
+    <item>lwt</item>
+    <item>clt</item>
+    <item>bis</item>
+    <item>lbf</item>
+    <item>bml</item>
+    <item>row</item>
+    <item>rno</item>
+    <item>bgm</item>
+    <item>day</item>
+    <item>law</item>
+    <item>rdm</item>
+    <item>pir</item>
+    <item>bro</item>
+    <item>sat</item>
+    <item>pvu</item>
+    <item>fcx</item>
+    <item>shd</item>
+    <item>tiw</item>
+    <item>riw</item>
 </string-array>
 
-<string-array name="radar_urls_array">
-    <item>http://images.intellicast.com/WxImages/RadarLoop/den_None_anim.gif</item>
-    <item>http://images.intellicast.com/WxImages/RadarLoop/usa_None_anim.gif</item>
-    <item>http://images.intellicast.com/WxImages/RadarLoop/bgm_None_anim.gif</item>
-    <item>http://images.intellicast.com/WxImages/RadarLoop/shd_None_anim.gif</item>
-</string-array>
 
+<string-array name="radar_names_array">
+    <item>United States</item>
+    <item>AR - Little Rock</item>
+    <item>AZ - Prescott</item>
+    <item>CA - Bakersfield</item>
+    <item>CO - Denver</item>
+    <item>CT - Hartford</item>
+    <item>FL - Key West</item>
+    <item>FL - Saint Petersburg</item>
+    <item>GA - Columbus</item>
+    <item>IA - Des Moines</item>
+    <item>ID - McCall</item>
+    <item>IL - Springfield</item>
+    <item>KS - Salina</item>
+    <item>KY - Bowling Green</item>
+    <item>LA - New Orleans</item>
+    <item>MI - Cadillac</item>
+    <item>MN - Saint Cloud</item>
+    <item>MO - Jefferson City</item>
+    <item>MS - Vicksburg</item>
+    <item>MT - Lewistown</item>
+    <item>NC - Charlotte</item>
+    <item>ND - Bismarck</item>
+    <item>NE - North Platte</item>
+    <item>NH - Berlin</item>
+    <item>NM - Roswell</item>
+    <item>NV - Reno</item>
+    <item>NY - Binghamton</item>
+    <item>OH - Dayton</item>
+    <item>OK - Lawton</item>
+    <item>OR - Redmond</item>
+    <item>SD - Pierre</item>
+    <item>TX - Brownsville</item>
+    <item>TX - San Antonio</item>
+    <item>UT - Provo</item>
+    <item>VA - Roanoke</item>
+    <item>VA - Staunton</item>
+    <item>WA - Tacoma</item>
+    <item>WY - Riverton</item>
+</string-array>
 
 </resources>
