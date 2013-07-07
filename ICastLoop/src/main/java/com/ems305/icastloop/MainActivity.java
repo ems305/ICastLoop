@@ -6,11 +6,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,7 +28,15 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 
+import java.util.Date;
+
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
+
+    // todo: bug on saving location
+    // todo: handle error
+    // todo: add splash screen
+    // todo: update icons
+    // todo: add subitems to listviews ?
 
     private WebView webView;
     private Spinner spinner;
@@ -56,9 +68,10 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         setContentView(R.layout.activity_main);
 
         // Update Spinner
-        spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_names_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
         spinner.setAdapter(adapter);
 
@@ -70,6 +83,70 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             if(selLocation != null){
                 int pos = adapter.getPosition(selLocation);
                 spinner.setSelection(pos);
+            }
+        } else {
+
+            // This Will Get Location
+            ICastLocation.LocationResult locationResult = new ICastLocation.LocationResult(){
+
+                @Override
+                public void gotLocation(Location location){
+                    //Got the location!
+
+                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = settings.edit();
+
+                    // This Will Maintain Precision
+                    editor.putLong("latitude", Double.doubleToLongBits(location.getLatitude()));
+                    editor.putLong("longitude", Double.doubleToLongBits(location.getLongitude()));
+
+                    editor.commit();
+                }
+            };
+
+            // Acquire Location... This Will Callback Above
+            ICastLocation myLocation = new ICastLocation();
+            myLocation.getLocation(this, locationResult);
+
+            // Find Closest Radar Location
+            double latitude = Double.longBitsToDouble(settings.getLong("latitude", 0));
+            double longitude = Double.longBitsToDouble(settings.getLong("longitude", 0));
+
+            if(latitude != 0 && longitude != 0){
+
+                Location userLoc = new android.location.Location("iCastUserLocation");
+                userLoc.setLatitude(latitude);
+                userLoc.setLongitude(longitude);
+
+                String[] radarCoordinates = getResources().getStringArray(R.array.radar_coordinate_array);
+                float maxDist = Float.MAX_VALUE;
+                int nearLocPos = 0;
+
+                for(int i = 0; i < radarCoordinates.length; i++){
+
+                    if(radarCoordinates[i].contains(",")){
+
+                        // Coordinates Are Formatted Like '34.746481,-92.289595'
+                        String[] coordinate = radarCoordinates[i].split(",");
+
+                        Double dLat = Double.parseDouble(coordinate[0]);
+                        Double dLng = Double.parseDouble(coordinate[1]);
+
+                        // Turn It To Android Location Object
+                        Location coordinateLoc = new Location("coordinate");
+                        coordinateLoc.setLatitude(dLat);
+                        coordinateLoc.setLongitude(dLng);
+
+                        float distTo = userLoc.distanceTo(coordinateLoc); // Android Built In Method To Compare Two Locations, Returns In Meters
+                        if(distTo < maxDist){
+                            maxDist = distTo;
+                            nearLocPos = i;
+                        }
+                    }
+                }
+
+                // Don't Need To Zero Check, If It's Zero It Will Set To First Item In Spinner
+                spinner.setSelection(nearLocPos);
             }
         }
 
@@ -129,17 +206,18 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     private void updateImages() {
 
         webView = (WebView) findViewById(R.id.radarWebView);
+        spinner = (Spinner) findViewById(R.id.spinner);
 
         // Set Our WebView Defaults
         this.setupWebView(webView);
 
-        spinner = (Spinner) findViewById(R.id.spinner);
-        int pos = spinner.getSelectedItemPosition();
-
         // Get Code
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_codes_array, android.R.layout.simple_spinner_item);
+
+        int pos = spinner.getSelectedItemPosition();
         CharSequence radarCode = adapter.getItem(pos);
 
+        // Rather Than Dealing With Sizing Issues On The Page, We'll Embed The Image In Markup And Render That
         int webViewWidth = webView.getWidth();
         final String html = "<body><table width=" + webViewWidth + "px ><tr><td><img src=\""
                 + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif"
@@ -160,7 +238,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         // Set All The Settings We Need To Have It Look Nice In The Device
         WebSettings settings = webView.getSettings();
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        settings.setBuiltInZoomControls(true);
         settings.setSupportZoom(true);
         settings.setUseWideViewPort(true);
         settings.setLightTouchEnabled(true);
