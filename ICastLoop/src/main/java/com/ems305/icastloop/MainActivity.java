@@ -2,33 +2,29 @@ package com.ems305.icastloop;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.view.Window;
 import android.view.KeyEvent;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
-
-import java.io.InputStream;
-
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
-    private ImageView imageview;
+    public static final String PREFS_NAME = "ICastLoopPrefFile";
+
     private WebView webView;
     private Spinner spinner;
     private ProgressDialog mProgressDialog;
@@ -39,9 +35,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        imageview = (ImageView) findViewById(R.id.radarImageView);
-        new DownloadImageTask(imageview).execute("http://images.intellicast.com/WxImages/RadarLoop/den_None_anim.gif");
-
         mProgressDialog = new ProgressDialog(this);
 
         // Update Spinner
@@ -51,25 +44,52 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         spinner.setOnItemSelectedListener(this);
         spinner.setAdapter(adapter);
 
+        // TODO: Set Default
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        boolean useDefault = settings.getBoolean("defaultMode", false);
+        if(useDefault == true){
+            String selLocation = settings.getString("defaultLocation", null);
+            int pos = adapter.getPosition(selLocation);
+            spinner.setSelection(pos);
+        } else {
+
+        }
+
         this.updateImages();
-
-        // Setup Our WebView Control
-        webView = (WebView) findViewById(R.id.radarWebView);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.setVerticalScrollBarEnabled(false);
-        webView.setHorizontalScrollBarEnabled(false);
-        webView.getSettings().setDefaultZoom(WebSettings.ZoomDensity.FAR);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setBuiltInZoomControls(true);
-        webView.setInitialScale(127); // So the Gif Fits The Container
-
-        //webView.loadUrl("http://images.intellicast.com/WxImages/RadarLoop/den_None_anim.gif"); // Set Default To Denver
-
-        webView.setWebViewClient(new ICastWebViewClient());
+    }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_preferences:
+                // Go to Settings Screen
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_exit:
+                // Exit The App
+                finish();
+                System.exit(0);
+                break;
+            case R.id.action_refresh:
+                // Refresh Image
+                this.updateImages();
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 
 
@@ -84,27 +104,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     }
 
 
-    // Button Clicks
-    public void onBtnClicked(View v){
-        if(v.getId() == R.id.exitButton){
-            // Exit The App
-            finish();
-            System.exit(0);
-        }
-
-        if(v.getId() == R.id.settingsButton){
-            // Go to Settings Screen
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        }
-
-        if(v.getId() == R.id.refreshButton){
-            this.updateImages();
-        }
-    }
-
-
-
     private void updateImages() {
 
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -114,16 +113,26 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_codes_array, android.R.layout.simple_spinner_item);
         CharSequence radarCode = adapter.getItem(pos);
 
-        imageview = (ImageView) findViewById(R.id.radarImageView);
-        new DownloadImageTask(imageview).execute("http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + ".gif");
-
-
         webView = (WebView) findViewById(R.id.radarWebView);
-        //webView.setVisibility(View.GONE);
-        webView.loadUrl("http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif");
+
+        final String html = "<body><table width=100% ><tr><td><img src=\""
+                + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif"
+                + "\"  width=100% /></td></tr></table>" + "</body>";
+
+        WebSettings settings = webView.getSettings();
+        settings.setBuiltInZoomControls(true);
+        settings.setSupportZoom(true);
+        settings.setUseWideViewPort(true);
+        settings.setLightTouchEnabled(true);
+        settings.setLoadWithOverviewMode(true);
+
+        webView.setWebViewClient(new ICastWebViewClient());
+        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setVerticalScrollBarEnabled(false);
+        webView.setHorizontalScrollBarEnabled(false);
+        webView.loadDataWithBaseURL("fake://not/needed", html, "text/html", "utf-8", "");
         webView.setBackgroundColor(Color.TRANSPARENT);
     }
-
 
 
     private class ICastWebViewClient extends WebViewClient {
@@ -147,7 +156,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
 
     private void animate(final WebView view) {
-        Animation anim = AnimationUtils.loadAnimation(getBaseContext(), android.R.anim.slide_in_left);
+        Animation anim = AnimationUtils.loadAnimation(getBaseContext(), android.R.anim.fade_in);
         view.startAnimation(anim);
     }
 
@@ -160,38 +169,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         }
         return super.onKeyDown(keyCode, event);
     }
-
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
-
-
 }
-
-
 
 /*
           Non-Animation
@@ -238,5 +216,4 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
           <option value="shd">VA - Staunton</option>
           <option value="tiw">WA - Tacoma</option>
           <option value="riw">WY - Riverton</option>
-
 */
