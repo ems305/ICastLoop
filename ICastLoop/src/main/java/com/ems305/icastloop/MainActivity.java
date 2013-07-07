@@ -67,12 +67,81 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(this);
+
+        // Setup Our Activity
+        this.setupActivity();
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+
+    @Override
+    protected void onResume() {
+        this.setupActivity();
+        super.onResume();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        // Build ActionBar Menu Items
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_preferences:
+                // Go to Settings Screen
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_exit:
+                // Exit The App
+                finish();
+                System.exit(0);
+                break;
+            case R.id.action_refresh:
+                // Refresh Image
+                this.updateImages();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+
+        this.updateImages();
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // interface callback
+    }
+
+
+    private void setupActivity(){
+
         // Update Spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_names_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spinner = (Spinner) findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(this);
         spinner.setAdapter(adapter);
 
         // Set Defaults
@@ -152,54 +221,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
         // Now Set the Image
         this.updateImages();
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Build ActionBar Menu Items
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return true;
-
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_preferences:
-                // Go to Settings Screen
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.action_exit:
-                // Exit The App
-                finish();
-                System.exit(0);
-                break;
-            case R.id.action_refresh:
-                // Refresh Image
-                this.updateImages();
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
-
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-
-        this.updateImages();
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // interface callback
     }
 
 
