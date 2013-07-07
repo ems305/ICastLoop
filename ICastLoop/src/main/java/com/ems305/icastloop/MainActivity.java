@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,8 +25,6 @@ import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
-
-    public static final String PREFS_NAME = "ICastLoopPrefFile";
 
     private WebView webView;
     private Spinner spinner;
@@ -64,7 +63,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         spinner.setAdapter(adapter);
 
         // Set Defaults
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean useDefaultLocation = settings.getBoolean("defaultMode", false);
         if(useDefaultLocation){
             String selLocation = settings.getString("defaultLocation", null);
