@@ -40,7 +40,7 @@ public class SettingsActivity extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        ArrayList<String> arrayList = new ArrayList();
+        ArrayList<String> arrayList = new ArrayList<String>();
         arrayList.add("Use My Location");
         arrayList.add("Use Default Location");
 
@@ -61,27 +61,19 @@ public class SettingsActivity extends Activity {
         // Restore preferences
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        // Select Item From Preferences
-        boolean useDefault = settings.getBoolean("defaultMode", false);
-        if(useDefault){
-
-            listView.setItemChecked(1, true);
-
-            String selLocation = settings.getString("defaultLocation", null);
-            if(selLocation != null){
-                int pos = adapter.getPosition(selLocation);
-                spinner.setSelection(pos);
-            }
-            spinner.setEnabled(true);
-            spinner.setClickable(true);
-
-        } else {
-
-            listView.setItemChecked(0, true);
-
-            spinner.setEnabled(false);
-            spinner.setClickable(false);
+        // Set Default Location No Matter Which Option Is Selected
+        String selLocation = settings.getString("defaultLocation", null);
+        if(selLocation != null){
+            int pos = adapter.getPosition(selLocation);
+            spinner.setSelection(pos);
         }
+
+        // Select ListItem From Preferences
+        boolean useDefault = settings.getBoolean("defaultMode", false);
+
+        listView.setItemChecked((useDefault ? 1 : 0), true);
+        spinner.setEnabled(useDefault);
+        spinner.setClickable(useDefault);
     }
 
 
