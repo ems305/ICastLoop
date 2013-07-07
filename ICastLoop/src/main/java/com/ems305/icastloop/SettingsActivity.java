@@ -120,7 +120,11 @@ public class SettingsActivity extends Activity {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("defaultMode", (position == 1));
-        editor.putString("defaultLocation", spinner.getSelectedItem().toString());
+
+        // Only Save If They Selected Default Option
+        if(position == 1){
+            editor.putString("defaultLocation", spinner.getSelectedItem().toString());
+        }
 
         // Commit the edits!
         editor.commit();
