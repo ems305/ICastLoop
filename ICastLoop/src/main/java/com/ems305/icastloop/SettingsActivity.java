@@ -3,7 +3,6 @@ package com.ems305.icastloop;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,9 +15,10 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 
-/**
+/*
  * Created by Erik on 7/5/13.
  */
+
 public class SettingsActivity extends Activity {
 
     public static final String PREFS_NAME = "ICastLoopPrefFile";
@@ -52,9 +52,10 @@ public class SettingsActivity extends Activity {
 
                 spinner = (Spinner) findViewById(R.id.spinner);
                 String selectedFromList = (String) (listView.getItemAtPosition(position));
-                spinner.setEnabled((selectedFromList == "Use Default Location"));
-                spinner.setClickable((selectedFromList == "Use Default Location"));
-
+                if(selectedFromList != null){
+                    spinner.setEnabled((selectedFromList.equals("Use Default Location")));
+                    spinner.setClickable((selectedFromList.equals("Use Default Location")));
+                }
             }
         });
 
@@ -99,16 +100,18 @@ public class SettingsActivity extends Activity {
 
                 int pos = listView.getPositionForView(listView);
                 String selectedFromList = (String) (listView.getItemAtPosition(pos));
+                if(selectedFromList != null){
 
-                // We need an Editor object to make preference changes.
-                // All objects are from android.context.Context
-                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putBoolean("defaultMode", (selectedFromList == "Use Default Location"));
-                editor.putString("defaultLocation", spinner.getSelectedItem().toString());
+                    // We need an Editor object to make preference changes.
+                    // All objects are from android.context.Context
+                    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putBoolean("defaultMode", (selectedFromList.equals("Use Default Location")));
+                    editor.putString("defaultLocation", spinner.getSelectedItem().toString());
 
-                // Commit the edits!
-                editor.commit();
+                    // Commit the edits!
+                    editor.commit();
+                }
 
                 // Go back to Main Screen
                 Intent intent = new Intent();
