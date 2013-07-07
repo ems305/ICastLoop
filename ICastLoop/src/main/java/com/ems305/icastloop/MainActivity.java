@@ -1,7 +1,6 @@
 package com.ems305.icastloop;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,20 +13,15 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.webkit.WebChromeClient;
+import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.view.KeyEvent;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
@@ -40,21 +34,21 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     public void onCreate(Bundle savedInstanceState) {
 
         // Check For Network Availability
-        if(this.isOnline() == false){
+        if(!this.isOnline()){
             // Bounce, They Don't Have A Connection
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("You must have an active network connection")
-                    .setTitle("ICastLoop Error")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                   .setTitle("ICastLoop Error")
+                   .setCancelable(false)
+                   .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 
                             // Exit App
                             finish();
                             System.exit(0);
-
                         }
                     });
+
             AlertDialog alert = builder.create();
             alert.show();
         }
@@ -69,28 +63,30 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         spinner.setOnItemSelectedListener(this);
         spinner.setAdapter(adapter);
 
-        // TODO: Set Default
-
+        // Set Defaults
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        boolean useDefault = settings.getBoolean("defaultMode", false);
-        if(useDefault == true){
+        boolean useDefaultLocation = settings.getBoolean("defaultMode", false);
+        if(useDefaultLocation){
             String selLocation = settings.getString("defaultLocation", null);
-            int pos = adapter.getPosition(selLocation);
-            spinner.setSelection(pos);
-        } else {
-
+            if(selLocation != null){
+                int pos = adapter.getPosition(selLocation);
+                spinner.setSelection(pos);
+            }
         }
 
+        // Now Set the Image
         this.updateImages();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         // Build ActionBar Menu Items
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return true;
+
     }
 
 
@@ -114,7 +110,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
             default:
                 break;
         }
-
         return true;
     }
 
@@ -149,7 +144,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         int webViewWidth = webView.getWidth();
         final String html = "<body><table width=" + webViewWidth + "px ><tr><td><img src=\""
                 + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif"
-                + "\"  width=" + webViewWidth +  "px /></td></tr></table>" + "</body>";
+                + "\" width=" + webViewWidth + "px /></td></tr></table>" + "</body>";
 
         webView.loadData(html, "text/html", "utf-8");
         webView.setBackgroundColor(Color.TRANSPARENT);
@@ -196,10 +191,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     public boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        }
-        return false;
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
 
@@ -224,7 +216,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
           <option value="lit">AR - Little Rock</option>
           <option value="prc">AZ - Prescott</option>
           <option value="bfl">CA - Bakersfield</option>
-          <option value="den" selected="selected">CO - Denver</option>
+          <option value="den">CO - Denver</option>
           <option value="hfd">CT - Hartford</option>
           <option value="eyw">FL - Key West</option>
           <option value="pie">FL - Saint Petersburg</option>
