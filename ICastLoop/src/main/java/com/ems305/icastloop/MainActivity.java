@@ -10,13 +10,16 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.KeyEvent;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
@@ -27,15 +30,14 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     private WebView webView;
     private Spinner spinner;
-    private ProgressDialog mProgressDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
+        // TODO: Check For Network Availability
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mProgressDialog = new ProgressDialog(this);
 
         // Update Spinner
         spinner = (Spinner) findViewById(R.id.spinner);
@@ -62,6 +64,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        // Build ActionBar Menu Items
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return true;
@@ -95,7 +98,9 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+
         this.updateImages();
+
     }
 
     @Override
@@ -106,58 +111,62 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     private void updateImages() {
 
+        webView = (WebView) findViewById(R.id.radarWebView);
+
+        // Set Our WebView Defaults
+        this.setupWebView(webView);
+
         spinner = (Spinner) findViewById(R.id.spinner);
         int pos = spinner.getSelectedItemPosition();
 
-        // Get Corresponding Radar URL And Load That
+        // Get Code
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_codes_array, android.R.layout.simple_spinner_item);
         CharSequence radarCode = adapter.getItem(pos);
 
-        webView = (WebView) findViewById(R.id.radarWebView);
-
-        final String html = "<body><table width=100% ><tr><td><img src=\""
+        int webViewWidth = webView.getWidth();
+        final String html = "<body><table width=" + webViewWidth + "px ><tr><td><img src=\""
                 + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif"
-                + "\"  width=100% /></td></tr></table>" + "</body>";
+                + "\"  width=" + webViewWidth +  "px /></td></tr></table>" + "</body>";
 
+        webView.loadData(html,"text/html","utf-8");
+        webView.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+
+    private void setupWebView(WebView webView){
+
+        // Clear Cache
+        webView.clearHistory();
+        webView.clearFormData();
+        webView.clearCache(true);
+
+        // Set All The Settings We Need To Have It Look Nice In The Device
         WebSettings settings = webView.getSettings();
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setBuiltInZoomControls(true);
         settings.setSupportZoom(true);
         settings.setUseWideViewPort(true);
         settings.setLightTouchEnabled(true);
         settings.setLoadWithOverviewMode(true);
 
-        webView.setWebViewClient(new ICastWebViewClient());
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
-        webView.loadDataWithBaseURL("fake://not/needed", html, "text/html", "utf-8", "");
-        webView.setBackgroundColor(Color.TRANSPARENT);
-    }
 
+        final ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        progressBar.setProgress(0);
+        progressBar.setVisibility(View.VISIBLE);
 
-    private class ICastWebViewClient extends WebViewClient {
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.setVisibility(View.GONE);
-            mProgressDialog.setTitle("Loading");
-            mProgressDialog.show();
-            mProgressDialog.setMessage("Loading " + url);
-            return false;
-        }
+        webView.setWebChromeClient(new WebChromeClient(){
 
-        @Override
-        public void onPageFinished(WebView view, String url) {
-            mProgressDialog.dismiss();
-            animate(view);
-            view.setVisibility(View.VISIBLE);
-            super.onPageFinished(view, url);
-        }
-    }
+            public void onProgressChanged(WebView view, int progress) {
 
-
-    private void animate(final WebView view) {
-        Animation anim = AnimationUtils.loadAnimation(getBaseContext(), android.R.anim.fade_in);
-        view.startAnimation(anim);
+                progressBar.setProgress(progress);
+                if(progress == 100) {
+                    progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
 

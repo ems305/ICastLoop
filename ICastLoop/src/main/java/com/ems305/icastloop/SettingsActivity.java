@@ -82,7 +82,6 @@ public class SettingsActivity extends Activity {
     }
 
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -121,7 +120,6 @@ public class SettingsActivity extends Activity {
             default:
                 break;
         }
-
         return true;
     }
 }
