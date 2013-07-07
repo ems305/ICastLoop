@@ -1,9 +1,14 @@
 package com.ems305.icastloop;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -34,7 +39,25 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        // TODO: Check For Network Availability
+        // Check For Network Availability
+        if(this.isOnline() == false){
+            // Bounce, They Don't Have A Connection
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("You must have an active network connection")
+                    .setTitle("ICastLoop Error")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                            // Exit App
+                            finish();
+                            System.exit(0);
+
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -128,7 +151,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif"
                 + "\"  width=" + webViewWidth +  "px /></td></tr></table>" + "</body>";
 
-        webView.loadData(html,"text/html","utf-8");
+        webView.loadData(html, "text/html", "utf-8");
         webView.setBackgroundColor(Color.TRANSPARENT);
     }
 
@@ -167,6 +190,16 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
                 }
             }
         });
+    }
+
+
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        return false;
     }
 
 
