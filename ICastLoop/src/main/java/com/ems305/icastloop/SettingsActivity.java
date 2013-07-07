@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -97,24 +98,9 @@ public class SettingsActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_back:
 
-                listView = (ListView) findViewById(R.id.optionListView);
+                this.saveSettings();
+                this.exitActivity();
 
-                int position = listView.getCheckedItemPosition();
-
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = settings.edit();
-                editor.putBoolean("defaultMode", (position == 1));
-                editor.putString("defaultLocation", spinner.getSelectedItem().toString());
-
-                // Commit the edits!
-                editor.commit();
-
-                // TODO: What Happens When They Hit System Back? Do We Save?
-
-                // Go back to Main Screen
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                this.finish();
 
                 break;
 
@@ -123,5 +109,52 @@ public class SettingsActivity extends Activity {
         }
         return true;
     }
+
+
+    private void exitActivity(){
+        // Go back to Main Screen
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        this.finish();
+    }
+
+
+    private void saveSettings(){
+
+        listView = (ListView) findViewById(R.id.optionListView);
+
+        int position = listView.getCheckedItemPosition();
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean("defaultMode", (position == 1));
+        editor.putString("defaultLocation", spinner.getSelectedItem().toString());
+
+        // Commit the edits!
+        editor.commit();
+
+        this.exitActivity();
+    }
+
+
+    public void onBackPressed(){
+        // Save Our Settings If They Do A System Back
+        this.saveSettings();
+        this.exitActivity();
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch(keyCode){
+            case KeyEvent.KEYCODE_BACK:
+                // Save Our Settings If They Do A System Back
+                this.saveSettings();
+                this.exitActivity();
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }
 
