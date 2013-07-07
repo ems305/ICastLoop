@@ -32,7 +32,6 @@ import java.util.Date;
 
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
-    // todo: bug on saving location
     // todo: handle error
     // todo: add splash screen
     // todo: update icons
@@ -259,6 +258,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         // Set All The Settings We Need To Have It Look Nice In The Device
         WebSettings settings = webView.getSettings();
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setBuiltInZoomControls(true);
         settings.setSupportZoom(true);
         settings.setUseWideViewPort(true);
         settings.setLightTouchEnabled(true);
