@@ -1,8 +1,6 @@
 package com.ems305.icastloop;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-
 import java.util.ArrayList;
 
 /*
@@ -44,7 +41,7 @@ public class SettingsActivity extends Activity {
         arrayList.add("Use My Location");
         arrayList.add("Use Default Location");
 
-        ArrayAdapter arrayAdapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_list_item_single_choice, arrayList);
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, arrayList);
         listView = (ListView) findViewById(R.id.optionListView);
         listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

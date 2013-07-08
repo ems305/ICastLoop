@@ -7,14 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.app.Activity;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,14 +25,10 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
 
-import java.util.Date;
-
 public class MainActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
-    // todo: handle error
     // todo: add splash screen
     // todo: update icons
-    // todo: add subitems to listviews ?
 
     private WebView webView;
     private Spinner spinner;
