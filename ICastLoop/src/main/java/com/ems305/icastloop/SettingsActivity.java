@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class SettingsActivity extends Activity {
 
     private Spinner spinner;
     private ListView listView;
+    private RadioGroup radioGroup;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,11 @@ public class SettingsActivity extends Activity {
             spinner.setSelection(pos);
         }
 
+        // Set Whether We Want To Use A Loop Or Still
+        boolean useLoop = settings.getBoolean("useLoop", true);
+        radioGroup = (RadioGroup) findViewById(R.id.radioGroupRadarType);
+        radioGroup.check(useLoop ? 0 : 1);
+
         // Select ListItem From Preferences
         boolean useDefault = settings.getBoolean("defaultMode", false);
 
@@ -86,12 +93,9 @@ public class SettingsActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_back:
-
                 this.saveSettings();
                 this.exitActivity();
-
                 break;
-
             default:
                 break;
         }
@@ -109,14 +113,13 @@ public class SettingsActivity extends Activity {
 
     private void saveSettings(){
 
-        listView = (ListView) findViewById(R.id.optionListView);
-
         int position = listView.getCheckedItemPosition();
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("locationMode", (position == 0));
         editor.putBoolean("defaultMode", (position == 1));
+        editor.putBoolean("useLoop", (radioGroup.getCheckedRadioButtonId() == 0));
         editor.putString("defaultLocation", spinner.getSelectedItem().toString());
         editor.commit();
 

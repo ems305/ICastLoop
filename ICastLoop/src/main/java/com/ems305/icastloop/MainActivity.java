@@ -59,6 +59,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        webView = (WebView) findViewById(R.id.radarWebView);
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(this);
 
@@ -87,7 +88,6 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return true;
-
     }
 
 
@@ -142,8 +142,7 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         if(useDefaultLocation){
             String selLocation = settings.getString("defaultLocation", null);
             if(selLocation != null){
-                int pos = adapter.getPosition(selLocation);
-                spinner.setSelection(pos);
+                spinner.setSelection(adapter.getPosition(selLocation));
             }
         } else {
 
@@ -218,22 +217,26 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 
     private void updateImages() {
 
-        webView = (WebView) findViewById(R.id.radarWebView);
-        spinner = (Spinner) findViewById(R.id.spinner);
-
         // Set Our WebView Defaults
         this.setupWebView(webView);
 
         // Get Code
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_codes_array, android.R.layout.simple_spinner_item);
+        String radarCode = adapter.getItem(spinner.getSelectedItemPosition()).toString();
 
-        int pos = spinner.getSelectedItemPosition();
-        CharSequence radarCode = adapter.getItem(pos);
+        // Set Defaults
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        boolean useLoop = settings.getBoolean("useLoop", true);
+        if(useLoop) {
+            radarCode += "_None_anim";
+        }
+        radarCode += ".gif";
 
         // Rather Than Dealing With Sizing Issues On The Page, We'll Embed The Image In Markup And Render That
         int webViewWidth = webView.getWidth();
         final String html = "<body><table width=" + webViewWidth + "px ><tr><td><img src=\""
-                + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode + "_None_anim.gif"
+                + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode
                 + "\" width=" + webViewWidth + "px /></td></tr></table>" + "</body>";
 
         webView.loadData(html, "text/html", "utf-8");

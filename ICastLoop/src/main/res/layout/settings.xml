@@ -30,4 +30,37 @@
 
     </TableRow>
 
+    <TableRow>
+
+        <RadioGroup
+            android:id="@+id/radioGroupRadarType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Radar Type"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/textView" />
+
+            <RadioButton
+                android:id="@+id/radioLoop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loop"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/radioStill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Still" />
+
+        </RadioGroup>
+
+    </TableRow>
+
+
 </TableLayout>
