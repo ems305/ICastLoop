@@ -35,28 +35,34 @@
         <RadioGroup
             android:id="@+id/radioGroupRadarType"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="30dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Radar Type"
                 android:layout_marginLeft="10dp"
-                android:id="@+id/textView" />
+                android:id="@+id/textView"
+                android:layout_marginBottom="2dp" />
 
             <RadioButton
                 android:id="@+id/radioLoop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Loop"
-                android:checked="true" />
+                android:checked="true"
+                android:layout_marginLeft="15dp"
+                android:layout_marginBottom="5dp" />
 
             <RadioButton
                 android:id="@+id/radioStill"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Still" />
+                android:text="Still"
+                android:layout_marginLeft="15dp"
+                android:layout_marginBottom="5dp" />
 
         </RadioGroup>
 

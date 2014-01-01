@@ -70,7 +70,12 @@ public class SettingsActivity extends Activity {
         // Set Whether We Want To Use A Loop Or Still
         boolean useLoop = settings.getBoolean("useLoop", true);
         radioGroup = (RadioGroup) findViewById(R.id.radioGroupRadarType);
-        radioGroup.check(useLoop ? 0 : 1);
+        if(useLoop == true){
+            radioGroup.check(R.id.radioLoop);
+        }
+        else {
+            radioGroup.check(R.id.radioStill);
+        }
 
         // Select ListItem From Preferences
         boolean useDefault = settings.getBoolean("defaultMode", false);
@@ -119,7 +124,7 @@ public class SettingsActivity extends Activity {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("locationMode", (position == 0));
         editor.putBoolean("defaultMode", (position == 1));
-        editor.putBoolean("useLoop", (radioGroup.getCheckedRadioButtonId() == 0));
+        editor.putBoolean("useLoop", (radioGroup.getCheckedRadioButtonId() == R.id.radioLoop));
         editor.putString("defaultLocation", spinner.getSelectedItem().toString());
         editor.commit();
 

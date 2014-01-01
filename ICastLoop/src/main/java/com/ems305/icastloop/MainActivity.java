@@ -227,17 +227,15 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
         // Set Defaults
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
+        // Determine Endpoint Based On Still/Animation
         boolean useLoop = settings.getBoolean("useLoop", true);
-        if(useLoop) {
-            radarCode += "_None_anim";
-        }
-        radarCode += ".gif";
+        String radarEndpoint = "/WxImages/" + (useLoop ? "RadarLoop/" + radarCode + "_None_anim" : "Radar/" + radarCode);
 
         // Rather Than Dealing With Sizing Issues On The Page, We'll Embed The Image In Markup And Render That
         int webViewWidth = webView.getWidth();
         final String html = "<body><table width=" + webViewWidth + "px ><tr><td><img src=\""
-                + "http://images.intellicast.com/WxImages/RadarLoop/" + radarCode
-                + "\" width=" + webViewWidth + "px /></td></tr></table>" + "</body>";
+                + "http://images.intellicast.com" + radarEndpoint
+                + ".gif\" width=" + webViewWidth + "px /></td></tr></table>" + "</body>";
 
         webView.loadData(html, "text/html", "utf-8");
         webView.setBackgroundColor(Color.TRANSPARENT);
@@ -299,48 +297,48 @@ public class MainActivity extends Activity implements AdapterView.OnItemSelected
 }
 
 /*
-          Non-Animation
-          http://images.intellicast.com/WxImages/RadarLoop/[REPLACE].gif
+      Non-Animation
+      http://images.intellicast.com/WxImages/RadarLoop/[REPLACE].gif
 
-          Animation
-          http://images.intellicast.com/WxImages/RadarLoop/[REPLACE]_None_anim.gif
+      Animation
+      http://images.intellicast.com/WxImages/RadarLoop/[REPLACE]_None_anim.gif
 
-          <option value="default">United States</option>
-          <option value="lit">AR - Little Rock</option>
-          <option value="prc">AZ - Prescott</option>
-          <option value="bfl">CA - Bakersfield</option>
-          <option value="den">CO - Denver</option>
-          <option value="hfd">CT - Hartford</option>
-          <option value="eyw">FL - Key West</option>
-          <option value="pie">FL - Saint Petersburg</option>
-          <option value="csg">GA - Columbus</option>
-          <option value="dsm">IA - Des Moines</option>
-          <option value="myl">ID - McCall</option>
-          <option value="spi">IL - Springfield</option>
-          <option value="sln">KS - Salina</option>
-          <option value="bwg">KY - Bowling Green</option>
-          <option value="msy">LA - New Orleans</option>
-          <option value="cad">MI - Cadillac</option>
-          <option value="stc">MN - Saint Cloud</option>
-          <option value="jef">MO - Jefferson City</option>
-          <option value="tvr">MS - Vicksburg</option>
-          <option value="lwt">MT - Lewistown</option>
-          <option value="clt">NC - Charlotte</option>
-          <option value="bis">ND - Bismarck</option>
-          <option value="lbf">NE - North Platte</option>
-          <option value="bml">NH - Berlin</option>
-          <option value="row">NM - Roswell</option>
-          <option value="rno">NV - Reno</option>
-          <option value="bgm">NY - Binghamton</option>
-          <option value="day">OH - Dayton</option>
-          <option value="law">OK - Lawton</option>
-          <option value="rdm">OR - Redmond</option>
-          <option value="pir">SD - Pierre</option>
-          <option value="bro">TX - Brownsville</option>
-          <option value="sat">TX - San Antonio</option>
-          <option value="pvu">UT - Provo</option>
-          <option value="fcx">VA - Roanoke</option>
-          <option value="shd">VA - Staunton</option>
-          <option value="tiw">WA - Tacoma</option>
-          <option value="riw">WY - Riverton</option>
+      <option value="default">United States</option>
+      <option value="lit">AR - Little Rock</option>
+      <option value="prc">AZ - Prescott</option>
+      <option value="bfl">CA - Bakersfield</option>
+      <option value="den">CO - Denver</option>
+      <option value="hfd">CT - Hartford</option>
+      <option value="eyw">FL - Key West</option>
+      <option value="pie">FL - Saint Petersburg</option>
+      <option value="csg">GA - Columbus</option>
+      <option value="dsm">IA - Des Moines</option>
+      <option value="myl">ID - McCall</option>
+      <option value="spi">IL - Springfield</option>
+      <option value="sln">KS - Salina</option>
+      <option value="bwg">KY - Bowling Green</option>
+      <option value="msy">LA - New Orleans</option>
+      <option value="cad">MI - Cadillac</option>
+      <option value="stc">MN - Saint Cloud</option>
+      <option value="jef">MO - Jefferson City</option>
+      <option value="tvr">MS - Vicksburg</option>
+      <option value="lwt">MT - Lewistown</option>
+      <option value="clt">NC - Charlotte</option>
+      <option value="bis">ND - Bismarck</option>
+      <option value="lbf">NE - North Platte</option>
+      <option value="bml">NH - Berlin</option>
+      <option value="row">NM - Roswell</option>
+      <option value="rno">NV - Reno</option>
+      <option value="bgm">NY - Binghamton</option>
+      <option value="day">OH - Dayton</option>
+      <option value="law">OK - Lawton</option>
+      <option value="rdm">OR - Redmond</option>
+      <option value="pir">SD - Pierre</option>
+      <option value="bro">TX - Brownsville</option>
+      <option value="sat">TX - San Antonio</option>
+      <option value="pvu">UT - Provo</option>
+      <option value="fcx">VA - Roanoke</option>
+      <option value="shd">VA - Staunton</option>
+      <option value="tiw">WA - Tacoma</option>
+      <option value="riw">WY - Riverton</option>
 */
