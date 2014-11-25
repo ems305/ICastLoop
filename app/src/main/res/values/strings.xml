@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<string name="app_name">ICastLoop</string>
+<string name="action_settings">Settings</string>
+
+<string-array name="radar_codes_array">
+    <item>usa</item>
+    <item>lit</item>
+    <item>prc</item>
+    <item>bfl</item>
+    <item>den</item>
+    <item>hfd</item>
+    <item>eyw</item>
+    <item>pie</item>
+    <item>csg</item>
+    <item>dsm</item>
+    <item>myl</item>
+    <item>spi</item>
+    <item>sln</item>
+    <item>bwg</item>
+    <item>msy</item>
+    <item>cad</item>
+    <item>stc</item>
+    <item>jef</item>
+    <item>tvr</item>
+    <item>lwt</item>
+    <item>clt</item>
+    <item>bis</item>
+    <item>lbf</item>
+    <item>bml</item>
+    <item>row</item>
+    <item>rno</item>
+    <item>bgm</item>
+    <item>day</item>
+    <item>law</item>
+    <item>rdm</item>
+    <item>pir</item>
+    <item>bro</item>
+    <item>sat</item>
+    <item>pvu</item>
+    <item>fcx</item>
+    <item>shd</item>
+    <item>tiw</item>
+    <item>riw</item>
+</string-array>
+
+
+<string-array name="radar_names_array">
+    <item>United States</item>
+    <item>AR - Little Rock</item>
+    <item>AZ - Prescott</item>
+    <item>CA - Bakersfield</item>
+    <item>CO - Denver</item>
+    <item>CT - Hartford</item>
+    <item>FL - Key West</item>
+    <item>FL - Saint Petersburg</item>
+    <item>GA - Columbus</item>
+    <item>IA - Des Moines</item>
+    <item>ID - McCall</item>
+    <item>IL - Springfield</item>
+    <item>KS - Salina</item>
+    <item>KY - Bowling Green</item>
+    <item>LA - New Orleans</item>
+    <item>MI - Cadillac</item>
+    <item>MN - Saint Cloud</item>
+    <item>MO - Jefferson City</item>
+    <item>MS - Vicksburg</item>
+    <item>MT - Lewistown</item>
+    <item>NC - Charlotte</item>
+    <item>ND - Bismarck</item>
+    <item>NE - North Platte</item>
+    <item>NH - Berlin</item>
+    <item>NM - Roswell</item>
+    <item>NV - Reno</item>
+    <item>NY - Binghamton</item>
+    <item>OH - Dayton</item>
+    <item>OK - Lawton</item>
+    <item>OR - Redmond</item>
+    <item>SD - Pierre</item>
+    <item>TX - Brownsville</item>
+    <item>TX - San Antonio</item>
+    <item>UT - Provo</item>
+    <item>VA - Roanoke</item>
+    <item>VA - Staunton</item>
+    <item>WA - Tacoma</item>
+    <item>WY - Riverton</item>
+</string-array>
+
+
+<string-array name="radar_coordinate_array">
+    <item>United States</item>
+    <item>34.746481,-92.289595</item>
+    <item>34.540024,-112.468502</item>
+    <item>35.373292,-119.018712</item>
+    <item>39.737567,-104.984718</item>
+    <item>41.763711,-72.685093</item>
+    <item>24.555059,-81.779987</item>
+    <item>27.773056,-82.64</item>
+    <item>32.460976,-84.987709</item>
+    <item>41.600545,-93.609106</item>
+    <item>44.911006,-116.098736</item>
+    <item>39.781721,-89.650148</item>
+    <item>38.840281,-97.611424</item>
+    <item>36.99032,-86.443602</item>
+    <item>29.951066,-90.071532</item>
+    <item>44.251953,-85.401162</item>
+    <item>45.557945,-94.16324</item>
+    <item>38.576702,-92.173516</item>
+    <item>32.352646,-90.877882</item>
+    <item>47.062473,-109.428238</item>
+    <item>35.227087,-80.843127</item>
+    <item>46.808327,-100.783739</item>
+    <item>41.140276,-100.760145</item>
+    <item>44.46867,-71.185077</item>
+    <item>33.394266,-104.523024</item>
+    <item>39.529633,-119.813803</item>
+    <item>42.098687,-75.917974</item>
+    <item>39.758948,-84.191607</item>
+    <item>34.603567,-98.395929</item>
+    <item>44.27262,-121.173921</item>
+    <item>44.368316,-100.350966</item>
+    <item>25.901747,-97.497484</item>
+    <item>29.424122,-98.493628</item>
+    <item>40.233844,-111.658534</item>
+    <item>37.27097,-79.941427</item>
+    <item>38.149576,-79.071696</item>
+    <item>47.252877,-122.444291</item>
+    <item>43.024959,-108.380104</item>
+</string-array>
+
+</resources>

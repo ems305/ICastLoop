@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="115dp"
+        android:id="@+id/activity_settings_list_view"
+        android:choiceMode="singleChoice" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/activity_settings_spinner"
+        android:layout_marginLeft="15dp" />
+
+    <RadioGroup
+        android:id="@+id/activity_settings_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Radar Type"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/textView"
+            android:layout_marginBottom="2dp" />
+
+        <RadioButton
+            android:id="@+id/radioLoop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loop"
+            android:checked="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="5dp" />
+
+        <RadioButton
+            android:id="@+id/radioStill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Still"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="5dp" />
+
+    </RadioGroup>
+
+</LinearLayout>
