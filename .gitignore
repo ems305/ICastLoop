@@ -1,4 +1,11 @@
 
+.gradle
+/local.properties
+.idea/workspace.xml
+.idea/libraries
+.DS_Store
+/build
+
 .DS_Store
 
 # Android Studio
@@ -7,7 +14,6 @@ ICastLoop/build/
 # User-specific configurations
 .idea/libraries/
 .idea/workspace.xml
- c
 .idea/.name
 .idea/compiler.xml
 .idea/copyright/profiles_settings.xml

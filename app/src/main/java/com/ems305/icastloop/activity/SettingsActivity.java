@@ -41,7 +41,7 @@ public class SettingsActivity extends Activity {
         setContentView(R.layout.activity_settings);
 
         // Update Spinner
-        mSpinner = (Spinner) findViewById(R.id.spinner);
+        mSpinner = (Spinner) findViewById(R.id.activity_settings_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_names_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(adapter);
@@ -51,7 +51,7 @@ public class SettingsActivity extends Activity {
         arrayList.add("Use Default Location");
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, arrayList);
-        mListView = (ListView) findViewById(R.id.optionListView);
+        mListView = (ListView) findViewById(R.id.activity_settings_list_view);
         mListView.setAdapter(arrayAdapter);
         mListView.setOnItemClickListener(mListItemClickListener);
 
@@ -67,7 +67,7 @@ public class SettingsActivity extends Activity {
 
         // Set Whether We Want To Use A Loop Or Still
         boolean useLoop = settings.getBoolean("useLoop", true);
-        mRadioGroup = (RadioGroup) findViewById(R.id.radioGroupRadarType);
+        mRadioGroup = (RadioGroup) findViewById(R.id.activity_settings_radio_group);
         if (useLoop) {
             mRadioGroup.check(R.id.radioLoop);
         } else {
@@ -127,7 +127,7 @@ public class SettingsActivity extends Activity {
         editor.putBoolean("defaultMode", (position == 1));
         editor.putBoolean("useLoop", (mRadioGroup.getCheckedRadioButtonId() == R.id.radioLoop));
         editor.putString("defaultLocation", mSpinner.getSelectedItem().toString());
-        editor.commit();
+        editor.apply();
 
         this.exitActivity();
     }
@@ -163,7 +163,7 @@ public class SettingsActivity extends Activity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            mSpinner = (Spinner) findViewById(R.id.spinner);
+            mSpinner = (Spinner) findViewById(R.id.activity_settings_spinner);
             mSpinner.setEnabled((position == 1));
             mSpinner.setClickable((position == 1));
         }

@@ -68,8 +68,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mWebView = (WebView) findViewById(R.id.radarWebView);
-        mSpinner = (Spinner) findViewById(R.id.spinner);
+        mWebView = (WebView) findViewById(R.id.activity_main_web_view);
+        mSpinner = (Spinner) findViewById(R.id.activity_main_spinner);
         mSpinner.setOnItemSelectedListener(mItemSelectedListener);
     }
 
@@ -157,6 +157,7 @@ public class MainActivity extends Activity {
             myLocation.getLocation(this, locationResult);
 
             // Find Closest Radar Location
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             double latitude = Double.longBitsToDouble(settings.getLong("latitude", 0));
             double longitude = Double.longBitsToDouble(settings.getLong("longitude", 0));
 
@@ -247,7 +248,7 @@ public class MainActivity extends Activity {
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
 
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.activity_main_progress_bar);
         progressBar.setProgress(0);
         progressBar.setVisibility(View.VISIBLE);
 
