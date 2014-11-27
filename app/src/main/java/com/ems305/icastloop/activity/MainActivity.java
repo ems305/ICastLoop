@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
 
                             // Exit App
                             finish();
-                            System.exit(0);
+                            System.exit(0); // TODO: Dont Close
                         }
                     });
 
@@ -147,8 +147,7 @@ public class MainActivity extends Activity {
                     // This Will Maintain Precision
                     editor.putLong("latitude", Double.doubleToLongBits(location.getLatitude()));
                     editor.putLong("longitude", Double.doubleToLongBits(location.getLongitude()));
-
-                    editor.commit();
+                    editor.apply();
                 }
             };
 
