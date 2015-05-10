@@ -4,8 +4,9 @@ import android.app.Application;
 import android.content.Context;
 
 /**
- * Created by eriksmith on 7/5/14.
+ * Created by Erik Smith on 7/5/14.
  */
+
 public class ICastApplication extends Application {
 
     private static Context mContext;

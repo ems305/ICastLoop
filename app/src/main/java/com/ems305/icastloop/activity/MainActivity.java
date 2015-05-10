@@ -1,17 +1,11 @@
 package com.ems305.icastloop.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -25,18 +19,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.ems305.icastloop.R;
-import com.ems305.icastloop.utility.ICastLocation;
-import com.ems305.icastloop.utility.ICastPreferences;
+import com.ems305.icastloop.model.ICastLocation;
+import com.ems305.icastloop.utility.ICastPrefs;
+import com.ems305.icastloop.utility.NetworkUtils;
 
+/**
+ * Created by Erik Smith on 7/5/14.
+ */
 public class MainActivity extends Activity {
 
     // todo: add splash screen
-    // todo: update icons
 
     private WebView mWebView;
     private Spinner mSpinner;
+    private ProgressBar mProgressBar;
 
     // ------------------------------------
     // Lifecycle Methods
@@ -44,33 +43,11 @@ public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        // Check For Network Availability
-        if (!this.isOnline()) {
-            // Bounce, They Don't Have A Connection
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("You must have an active network connection")
-                    .setTitle("ICastLoop Error")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-
-                            // Exit App
-                            finish();
-                            System.exit(0); // TODO: Dont Close
-                        }
-                    });
-
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mWebView = (WebView) findViewById(R.id.activity_main_web_view);
-        mSpinner = (Spinner) findViewById(R.id.activity_main_spinner);
-        mSpinner.setOnItemSelectedListener(mItemSelectedListener);
+        initControls();
+        initListeners();
     }
 
     @Override
@@ -79,35 +56,63 @@ public class MainActivity extends Activity {
         this.setupActivity();
     }
 
+    @Override
+    public void onBackPressed() {
+
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    // ------------------------------------
+    // Init Methods
+    // ------------------------------------
+
+    private void initControls() {
+
+        mWebView = (WebView) findViewById(R.id.activity_main_web_view);
+        mSpinner = (Spinner) findViewById(R.id.activity_main_spinner);
+        mProgressBar = (ProgressBar) findViewById(R.id.activity_main_progress_bar);
+    }
+
+    private void initListeners() {
+
+        mSpinner.setOnItemSelectedListener(mItemSelectedListener);
+    }
+
     // ------------------------------------
     // Menu Methods
     // ------------------------------------
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_preferences:
-                // Go to Settings Screen
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.action_exit:
-                // Exit The App
-                finish();
-                System.exit(0);
+            case android.R.id.home:
+                // Treat "Up" Button As Back Button So We Don't Go Through Full Lifecycle Again...
+                onBackPressed();
                 break;
             case R.id.action_refresh:
                 // Refresh Image
-                this.updateImages();
+                this.updateRadarImage();
+                break;
+            case R.id.action_preferences:
+                Intent preferenceIntent = new Intent(this, SettingsActivity.class);
+                startActivity(preferenceIntent);
+                break;
+            case R.id.action_about:
+                Intent aboutIntent = new Intent(this, AboutActivity.class);
+                startActivity(aboutIntent);
                 break;
             default:
+                super.onOptionsItemSelected(item);
                 break;
         }
         return true;
@@ -119,6 +124,13 @@ public class MainActivity extends Activity {
 
     private void setupActivity() {
 
+        // Check For Network Availability
+        if (!NetworkUtils.isOnline()) {
+            // Bounce, They Don't Have A Connection
+            Toast.makeText(this, "You must have an active network connection", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         // Update Spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_names_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -126,43 +138,118 @@ public class MainActivity extends Activity {
         mSpinner.setAdapter(adapter);
 
         // Set Defaults
-        boolean useDefaultLocation = ICastPreferences.getInstance().getDefaultMode();
+        boolean useDefaultLocation = ICastPrefs.getInstance().getDefaultMode();
         if (useDefaultLocation) {
-            String selLocation = ICastPreferences.getInstance().getDefaultLocation();
+            String selLocation = ICastPrefs.getInstance().getDefaultLocation();
             if (!TextUtils.isEmpty(selLocation)) {
                 mSpinner.setSelection(adapter.getPosition(selLocation));
+                this.updateRadarImage();
             }
         } else {
-
-            // This Will Get Location
-            ICastLocation.LocationResult locationResult = new ICastLocation.LocationResult() {
-
-                @Override
-                public void gotLocation(Location location) {
-                    //Got the location!
-
-                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                    SharedPreferences.Editor editor = settings.edit();
-
-                    // This Will Maintain Precision
-                    editor.putLong("latitude", Double.doubleToLongBits(location.getLatitude()));
-                    editor.putLong("longitude", Double.doubleToLongBits(location.getLongitude()));
-                    editor.apply();
-                }
-            };
-
-            // Acquire Location... This Will Callback Above
+            // Acquire Location... Callback Handles Loading Image
             ICastLocation myLocation = new ICastLocation();
-            myLocation.getLocation(this, locationResult);
+            myLocation.getLocation(this, mLocationResultCallback);
+        }
+    }
+
+    private void updateRadarImage() {
+
+        // Set Our WebView Defaults
+        this.setupWebView(mWebView);
+
+        // Get Code
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_codes_array, android.R.layout.simple_spinner_item);
+        String radarCode = adapter.getItem(mSpinner.getSelectedItemPosition()).toString();
+
+        // Determine Endpoint Based On Still/Animation
+        boolean useLoop = ICastPrefs.getInstance().getUseLoop();
+        String radarEndpoint = "/WxImages/" + (useLoop ? "RadarLoop/" + radarCode + "_None_anim" : "Radar/" + radarCode);
+
+        String html = "<body><table width=[[WIDTH]]px ><tr><td><img src=\"http://images.intellicast.com[[ENDPOINT]].gif\" width=[[WIDTH]]px /></td></tr></table></body>";
+        html = html.replace("[[WIDTH]]", Integer.toString(mWebView.getWidth()));
+        html = html.replace("[[ENDPOINT]]", radarEndpoint);
+        mWebView.loadData(html, "text/html", "utf-8");
+        mWebView.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    private void setupWebView(WebView webView) {
+
+        // Clear Cache
+        webView.clearHistory();
+        webView.clearFormData();
+        webView.clearCache(true);
+
+        // Set All The Settings We Need To Have It Look Nice In The Device
+        WebSettings settings = webView.getSettings();
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        settings.setBuiltInZoomControls(true);
+        settings.setSupportZoom(true);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+
+        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setVerticalScrollBarEnabled(false);
+        webView.setHorizontalScrollBarEnabled(false);
+
+        mProgressBar.setProgress(0);
+        mProgressBar.setVisibility(View.VISIBLE);
+
+        webView.setWebChromeClient(new WebChromeClient() {
+
+            public void onProgressChanged(WebView view, int progress) {
+
+                mProgressBar.setProgress(progress);
+                if (progress == 100) {
+                    mProgressBar.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()) {
+            mWebView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    // ------------------------------------
+    // Listeners
+    // ------------------------------------
+
+    final AdapterView.OnItemSelectedListener mItemSelectedListener = new AdapterView.OnItemSelectedListener() {
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            MainActivity.this.updateRadarImage();
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+    };
+
+    final ICastLocation.LocationResult mLocationResultCallback = new ICastLocation.LocationResult() {
+
+        @Override
+        public void gotLocation(Location location) {
+
+            if (location == null) {
+                return;
+            }
+
+            // Set Preferences...
+            ICastPrefs.getInstance().setLatitude(Double.doubleToLongBits(location.getLatitude()));
+            ICastPrefs.getInstance().setLongitude(Double.doubleToLongBits(location.getLongitude()));
 
             // Find Closest Radar Location
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            double latitude = Double.longBitsToDouble(settings.getLong("latitude", 0));
-            double longitude = Double.longBitsToDouble(settings.getLong("longitude", 0));
-
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
             if (latitude != 0 && longitude != 0) {
 
-                Location userLoc = new android.location.Location("iCastUserLocation");
+                Location userLoc = new Location("iCastUserLocation");
                 userLoc.setLatitude(latitude);
                 userLoc.setLongitude(longitude);
 
@@ -195,102 +282,8 @@ public class MainActivity extends Activity {
 
                 // Don't Need To Zero Check, If It's Zero It Will Set To First Item In Spinner
                 mSpinner.setSelection(nearLocPos);
+                MainActivity.this.updateRadarImage();
             }
-        }
-
-        // Now Set the Image
-        this.updateImages();
-    }
-
-    private void updateImages() {
-
-        // Set Our WebView Defaults
-        this.setupWebView(mWebView);
-
-        // Get Code
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_codes_array, android.R.layout.simple_spinner_item);
-        String radarCode = adapter.getItem(mSpinner.getSelectedItemPosition()).toString();
-
-        // Set Defaults
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-        // Determine Endpoint Based On Still/Animation
-        boolean useLoop = settings.getBoolean("useLoop", true);
-        String radarEndpoint = "/WxImages/" + (useLoop ? "RadarLoop/" + radarCode + "_None_anim" : "Radar/" + radarCode);
-
-        // Rather Than Dealing With Sizing Issues On The Page, We'll Embed The Image In Markup And Render That
-        int webViewWidth = mWebView.getWidth();
-        final String html = "<body><table width=" + webViewWidth + "px ><tr><td><img src=\""
-                + "http://images.intellicast.com" + radarEndpoint
-                + ".gif\" width=" + webViewWidth + "px /></td></tr></table>" + "</body>";
-
-        mWebView.loadData(html, "text/html", "utf-8");
-        mWebView.setBackgroundColor(Color.TRANSPARENT);
-    }
-
-    private void setupWebView(WebView webView) {
-
-        // Clear Cache
-        webView.clearHistory();
-        webView.clearFormData();
-        webView.clearCache(true);
-
-        // Set All The Settings We Need To Have It Look Nice In The Device
-        WebSettings settings = webView.getSettings();
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        settings.setBuiltInZoomControls(true);
-        settings.setSupportZoom(true);
-        settings.setUseWideViewPort(true);
-        settings.setLoadWithOverviewMode(true);
-
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.setVerticalScrollBarEnabled(false);
-        webView.setHorizontalScrollBarEnabled(false);
-
-        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.activity_main_progress_bar);
-        progressBar.setProgress(0);
-        progressBar.setVisibility(View.VISIBLE);
-
-        webView.setWebChromeClient(new WebChromeClient() {
-
-            public void onProgressChanged(WebView view, int progress) {
-
-                progressBar.setProgress(progress);
-                if (progress == 100) {
-                    progressBar.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
-
-    @Override
-    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()) {
-            mWebView.goBack();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    // ------------------------------------
-    // Listeners
-    // ------------------------------------
-
-    final AdapterView.OnItemSelectedListener mItemSelectedListener = new AdapterView.OnItemSelectedListener() {
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            updateImages();
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
         }
     };
 }

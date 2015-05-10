@@ -1,13 +1,8 @@
 package com.ems305.icastloop.activity;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,11 +12,12 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.ems305.icastloop.R;
+import com.ems305.icastloop.utility.ICastPrefs;
 
 import java.util.ArrayList;
 
 /*
- * Created by Erik on 7/5/13.
+ * Created by Erik Smith on 7/5/13.
  */
 
 public class SettingsActivity extends Activity {
@@ -29,6 +25,14 @@ public class SettingsActivity extends Activity {
     private Spinner mSpinner;
     private ListView mListView;
     private RadioGroup mRadioGroup;
+
+    private static final String MY_LOCATION = "Use My Location";
+    private static final String DEFAULT_LOCATION = "Use Default Location";
+
+    enum LocationDefault {
+        MY_LOCATION,
+        DEFAULT_LOCATION
+    }
 
     // ------------------------------------
     // Lifecycle Methods
@@ -40,46 +44,73 @@ public class SettingsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        // Update Spinner
+        initControls();
+        initListeners();
+
+        this.setupActivity();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        // Save Our Settings If They Do A System Back
+        this.saveSettingsAndExit();
+        super.onBackPressed();
+    }
+
+    // ------------------------------------
+    // Init Methods
+    // ------------------------------------
+
+    private void initControls() {
+
         mSpinner = (Spinner) findViewById(R.id.activity_settings_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.radar_names_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinner.setAdapter(adapter);
-
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add("Use My Location");
-        arrayList.add("Use Default Location");
-
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_single_choice, arrayList);
         mListView = (ListView) findViewById(R.id.activity_settings_list_view);
-        mListView.setAdapter(arrayAdapter);
-        mListView.setOnItemClickListener(mListItemClickListener);
+        mRadioGroup = (RadioGroup) findViewById(R.id.activity_settings_radio_group);
+    }
 
-        // Restore preferences
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    private void initListeners() {
+
+        mListView.setOnItemClickListener(mListItemClickListener);
+    }
+
+    private void setupActivity() {
+
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.radar_names_array, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(spinnerAdapter);
+
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add(MY_LOCATION);
+        arrayList.add(DEFAULT_LOCATION);
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, arrayList);
+        mListView.setAdapter(arrayAdapter);
 
         // Set Default Location No Matter Which Option Is Selected
-        String selLocation = settings.getString("defaultLocation", null);
-        if (selLocation != null) {
-            int pos = adapter.getPosition(selLocation);
+        String defaultLocation = ICastPrefs.getInstance().getDefaultLocation();
+        if (defaultLocation != null) {
+            int pos = spinnerAdapter.getPosition(defaultLocation);
             mSpinner.setSelection(pos);
         }
 
         // Set Whether We Want To Use A Loop Or Still
-        boolean useLoop = settings.getBoolean("useLoop", true);
-        mRadioGroup = (RadioGroup) findViewById(R.id.activity_settings_radio_group);
+        boolean useLoop = ICastPrefs.getInstance().getUseLoop();
         if (useLoop) {
-            mRadioGroup.check(R.id.radioLoop);
+            mRadioGroup.check(R.id.activity_settings_radio_loop);
         } else {
-            mRadioGroup.check(R.id.radioStill);
+            mRadioGroup.check(R.id.activity_settings_radio_still);
         }
 
         // Select ListItem From Preferences
-        boolean useDefault = settings.getBoolean("defaultMode", false);
-
-        mListView.setItemChecked((useDefault ? 1 : 0), true);
-        mSpinner.setEnabled(useDefault);
-        mSpinner.setClickable(useDefault);
+        boolean useDefaultLocation = ICastPrefs.getInstance().getDefaultMode();
+        if (useDefaultLocation) {
+            mListView.setItemChecked(LocationDefault.DEFAULT_LOCATION.ordinal(), true);
+        } else {
+            mListView.setItemChecked(LocationDefault.MY_LOCATION.ordinal(), true);
+        }
+        mSpinner.setEnabled(useDefaultLocation);
+        mSpinner.setClickable(useDefaultLocation);
     }
 
     // ------------------------------------
@@ -88,19 +119,18 @@ public class SettingsActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.subpage, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_back:
-                saveSettings();
-                exitActivity();
+            case android.R.id.home:
+                // Treat "Up" Button As Back Button So We Don't Go Through Full Lifecycle Again...
+                onBackPressed();
                 break;
             default:
+                super.onOptionsItemSelected(item);
                 break;
         }
         return true;
@@ -110,49 +140,13 @@ public class SettingsActivity extends Activity {
     // Private Methods
     // ------------------------------------
 
-    private void exitActivity() {
-        // Go back to Main Screen
-        Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
-        this.finish();
-    }
-
-    private void saveSettings() {
+    private void saveSettingsAndExit() {
 
         int position = mListView.getCheckedItemPosition();
 
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putBoolean("locationMode", (position == 0));
-        editor.putBoolean("defaultMode", (position == 1));
-        editor.putBoolean("useLoop", (mRadioGroup.getCheckedRadioButtonId() == R.id.radioLoop));
-        editor.putString("defaultLocation", mSpinner.getSelectedItem().toString());
-        editor.apply();
-
-        this.exitActivity();
-    }
-
-    // ------------------------------------
-    // Overrides
-    // ------------------------------------
-
-    @Override
-    public void onBackPressed() {
-        // Save Our Settings If They Do A System Back
-        this.saveSettings();
-        this.exitActivity();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BACK:
-                // Save Our Settings If They Do A System Back
-                this.saveSettings();
-                this.exitActivity();
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
+        ICastPrefs.getInstance().setDefaultMode(position == LocationDefault.DEFAULT_LOCATION.ordinal());
+        ICastPrefs.getInstance().setUseLoop((mRadioGroup.getCheckedRadioButtonId() == R.id.activity_settings_radio_loop));
+        ICastPrefs.getInstance().setDefaultLocation(mSpinner.getSelectedItem().toString());
     }
 
     // ------------------------------------
@@ -162,10 +156,8 @@ public class SettingsActivity extends Activity {
     final AdapterView.OnItemClickListener mListItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            mSpinner = (Spinner) findViewById(R.id.activity_settings_spinner);
-            mSpinner.setEnabled((position == 1));
-            mSpinner.setClickable((position == 1));
+            mSpinner.setEnabled((position == LocationDefault.DEFAULT_LOCATION.ordinal()));
+            mSpinner.setClickable((position == LocationDefault.DEFAULT_LOCATION.ordinal()));
         }
     };
 }
