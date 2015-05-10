@@ -1,6 +1,5 @@
 package com.ems305.icastloop.activity;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -31,7 +29,9 @@ import com.ems305.icastloop.utility.NetworkUtils;
  */
 public class MainActivity extends Activity {
 
-    // todo: add splash screen
+    // TODO: Add OpenWeatherMap API
+    // http://code.aksingh.net/owm-japis/src
+    // http://openweathermap.org/
 
     private WebView mWebView;
     private Spinner mSpinner;

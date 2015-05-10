@@ -34,7 +34,7 @@
             android:layout_marginBottom="2dp"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
-            android:text="Radar Type"
+            android:text="Radar Image Type"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         <RadioButton
@@ -45,7 +45,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginStart="15dp"
             android:checked="true"
-            android:text="Loop"/>
+            android:text="Animation"/>
 
         <RadioButton
             android:id="@+id/activity_settings_radio_still"

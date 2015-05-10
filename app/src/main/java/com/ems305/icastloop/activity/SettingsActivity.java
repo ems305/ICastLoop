@@ -1,5 +1,6 @@
 package com.ems305.icastloop.activity;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -26,7 +27,7 @@ public class SettingsActivity extends Activity {
     private ListView mListView;
     private RadioGroup mRadioGroup;
 
-    private static final String MY_LOCATION = "Use My Location";
+    private static final String DEVICE_LOCATION = "Use Device Location";
     private static final String DEFAULT_LOCATION = "Use Default Location";
 
     enum LocationDefault {
@@ -43,6 +44,11 @@ public class SettingsActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         initControls();
         initListeners();
@@ -81,7 +87,7 @@ public class SettingsActivity extends Activity {
         mSpinner.setAdapter(spinnerAdapter);
 
         ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add(MY_LOCATION);
+        arrayList.add(DEVICE_LOCATION);
         arrayList.add(DEFAULT_LOCATION);
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_single_choice, arrayList);

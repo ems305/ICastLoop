@@ -14,7 +14,7 @@
         android:id="@+id/action_preferences"
         android:icon="@android:drawable/ic_menu_preferences"
         android:orderInCategory="101"
-        android:title="Preferences"
+        android:title="Settings"
         app:showAsAction="ifRoom|withText"/>
 
     <item

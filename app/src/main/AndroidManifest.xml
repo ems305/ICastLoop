@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     package="com.ems305.icastloop"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -32,11 +33,25 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:configChanges="orientation|screenSize"
-            android:label="@string/activity_settings"/>
+            android:label="@string/activity_settings"
+            android:parentActivityName=".activity.MainActivity"
+            tools:ignore="UnusedAttribute">
+            <!-- < API 16 Support -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity"/>
+        </activity>
 
         <activity
             android:name=".activity.AboutActivity"
-            android:label="@string/activity_about"/>
+            android:label="@string/activity_about"
+            android:parentActivityName=".activity.MainActivity"
+            tools:ignore="UnusedAttribute">
+            <!-- < API 16 Support -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.MainActivity"/>
+        </activity>
 
     </application>
 
